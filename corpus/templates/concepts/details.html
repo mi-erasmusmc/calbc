@@ -1,0 +1,208 @@
+{% extends "admin/annotationbase.html" %}
+
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Knewco annotation site admin' %}{% endblock %}
+
+{% block branding %}
+<img src="/site-media/images/knewco.png" style="height:40px"/><label id="sitelabel">{{ concept }}</label>
+{% endblock %}
+
+{% block content %}
+
+<script type="text/javascript" src="/site-media/js/tabpane/local/webfxlayout.js"></script>
+
+<!-- this link element includes the css definitions that describes the tab pane -->
+<link id="luna-tab-style-sheet" type="text/css" rel="stylesheet" href="/site-media/js/tabpane/css/luna/tab.css" disabled="disabled" />
+<link id="webfx-tab-style-sheet" type="text/css" rel="stylesheet" href="/site-media/js/tabpane/css/tab.webfx.css" disabled="disabled" />
+<link id="winclassic-tab-style-sheet" type="text/css" rel="stylesheet" href="/site-media/js/tabpane/css/tab.winclassic.css"  disabled="disabled" />
+<script type="text/javascript" src="/site-media/js/tabpane/js/tabpane.js"></script>
+<script type="text/javascript">
+<!--
+//<![CDATA[
+
+function setLinkSrc( sStyle ) 
+{
+	document.getElementById( "luna-tab-style-sheet" ).disabled = sStyle != "luna";
+	document.getElementById( "webfx-tab-style-sheet" ).disabled = sStyle != "webfx"
+	document.getElementById( "winclassic-tab-style-sheet" ).disabled = sStyle != "winclassic"
+}
+
+setLinkSrc( "luna" );
+
+//]]>
+--></script>
+
+{% if concept %}
+	<!-- block with button to suppress concept -->
+		
+	<form action="" method="post">
+		<input type="hidden" id="action" name="action" value=""/>
+		<input 	type="hidden" id="checkbox-{{ conceptAnnotation.id }}-suppressed" name="checkbox-{{ conceptAnnotation.id }}-suppressed" {% if conceptAnnotation.suppressed %}value="True" {% else %}value="False"{% endif %}/> 
+
+		<div id="conceptannotation">
+			<table>
+				<tr>
+					<td><nobr><b>Concept id:</b></nobr></td>
+					<td>{{ conceptAnnotation.conceptId.conceptId }}</td>
+				</tr>
+				<tr>
+					<td>
+						<b><nobr>Semantic types:</nobr></b>
+					</td>
+					<td>
+						{% for semantictype in semantictypes %}
+							
+							{% if not forloop.first %},&nbsp;{% endif %}
+							<a href="/semantictype/{{ semantictype.semanticTypeId.id }}" >{{ semantictype.getLabel }}</a>
+						{% endfor %}
+					</td>
+				</tr>
+				<tr>
+					<td></td>
+					<td>
+						<b>Suppressed:</b>
+						<input  class="checkbox-suppressed" 
+								type="checkbox" 
+								{% if conceptAnnotation.suppressed %}checked="true" {% endif %}
+								onclick = "document.getElementById('checkbox-{{ conceptAnnotation.id }}-suppressed').value = ( this.checked ? 'True' : 'False' );"/>
+						&nbsp;&nbsp;<b>Displayed:&nbsp;</b><img src="/site-media/images/{% ifequal conceptAnnotation.displayed 1 %}true{% else %}false{% endifequal %}.gif"/>
+						&nbsp;&nbsp;<b>Frequency:</b>
+						{{ conceptAnnotation.getFrequency }}
+						&nbsp;&nbsp;<b>Sites:</b> {{ conceptAnnotation.getSites }}
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<b>Vocabularies:</b>
+					</td>
+					<td>
+						{% for vocabulary in vocabularies %}
+							{{ vocabulary.vocabulary.vocabularyName }},&nbsp;
+						{% endfor %}
+					</td>
+				</tr>
+				<tr>
+					<td><b>Comment:</b></td>
+					<td>
+						<input	type="text"
+								style="width:500px"
+								id="text-{{ conceptAnnotation.id }}-comment"
+								name="text-{{ conceptAnnotation.id }}-comment"
+								value="{{ conceptAnnotation.comment }}">
+						</input>
+					</td>
+				</tr>
+				<tr>
+					<td>
+						<b>Review date:</b>
+					</td>
+					<td>
+						{{ conceptAnnotation.reviewDate|date:"r" }}
+					</td>
+				</tr>
+			</table>
+			<br/>
+
+			<button type="submit" onclick="document.getElementById('action').value = 'cancel';">Cancel</button>
+			<button type="submit" onclick="document.getElementById('action').value = 'save';">Save</button>
+			
+			<label><b>Reviewed:</b></label>
+			&nbsp;
+			<label>relations</label>
+			<input 	class="checkbox-reviewed_relations"
+					type="hidden" 
+					id="checkbox-{{ conceptAnnotation.id }}-reviewed_relations" 
+					name="checkbox-{{ conceptAnnotation.id }}-reviewed_relations" 
+					{% if conceptAnnotation.reviewed_relations %}value="True" {% else %}value="False"{% endif %}/> 
+			<input  class="checkbox-reviewed_relations" 
+					type="checkbox" 
+					{% if conceptAnnotation.reviewed_relations %}checked="true" {% endif %}
+					onclick = "document.getElementById('checkbox-{{ conceptAnnotation.id }}-reviewed_relations').value = ( this.checked ? 'True' : 'False' );"/>
+
+			&nbsp;
+			<label>definitions</label>
+			<input 	class="checkbox-reviewed_definitions"
+					type="hidden" 
+					id="checkbox-{{ conceptAnnotation.id }}-reviewed_definitions" 
+					name="checkbox-{{ conceptAnnotation.id }}-reviewed_definitions" 
+					{% if conceptAnnotation.reviewed_definitions %}value="True" {% else %}value="False"{% endif %}/> 
+			<input  class="checkbox-reviewed_definitions" 
+					type="checkbox" 
+					{% if conceptAnnotation.reviewed_definitions %}checked="true" {% endif %}
+					onclick = "document.getElementById('checkbox-{{ conceptAnnotation.id }}-reviewed_definitions').value = ( this.checked ? 'True' : 'False' );"/>
+
+			&nbsp;
+			<label>terms</label>
+			<input 	class="checkbox-reviewed_terms"
+					type="hidden" 
+					id="checkbox-{{ conceptAnnotation.id }}-reviewed_terms" 
+					name="checkbox-{{ conceptAnnotation.id }}-reviewed_terms" 
+					{% if conceptAnnotation.reviewed_terms %}value="True" {% else %}value="False"{% endif %}/> 
+			<input  class="checkbox-reviewed_terms" 
+					type="checkbox" 
+					{% if conceptAnnotation.reviewed_terms %}checked="true" {% endif %}
+					onclick = "document.getElementById('checkbox-{{ conceptAnnotation.id }}-reviewed_terms').value = ( this.checked ? 'True' : 'False' );"/>
+
+		</div>
+	</form>
+	<br/>
+	
+	<!-- the block with the terms -->	
+	<div class="tab-pane" id="pane" style="height:500px">
+		<script type="text/javascript">
+			var tp1 = new WebFXTabPane( document.getElementById( "pane" ) );
+		</script>
+
+		<div class="tab-page" id="termsPage" style="height:100%">
+			<h2 class="tab" >Terms</h2>
+			<script type="text/javascript">
+				var tp = tp1.addTabPage( document.getElementById( "termsPage" ) );
+			</script>
+			<iframe id='terms' height="100%" width="100%" frameborder="no" src="/terms/{{ concept.id }}/"></iframe>
+			
+		</div>
+	
+		<div class="tab-page" id="definitionsPage" style="height:100%">
+			<h2 class="tab">Definitions</h2>
+			<script type="text/javascript">
+				var dp = tp1.addTabPage( document.getElementById( "definitionsPage" ) );
+			</script>
+			<iframe id='definitions' height="100%" width="100%" frameborder="no" src="/definitions/{{ concept.id }}/"></iframe>
+		</div>
+		
+		<div class="tab-page" id="relationsPage" style="height:100%">
+			<h2 class="tab">Relations</h2>
+			<script type="text/javascript">
+				var rp = tp1.addTabPage( document.getElementById( "relationsPage" ) );
+			</script>
+			<iframe id='relations' height="100%" width="100%" frameborder="no" src="/relations/{{ concept.id }}/"></iframe>
+			
+		</div>
+	</div>
+		
+{% else %}
+	<p>Concept not defined</p>
+{% endif %}
+
+<script type="text/javascript">
+	window.onresize = function(){
+		var windowwidth = window.innerWidth;
+		var windowheight = window.innerHeight;
+		var width = windowwidth - document.getElementById( "pane" ).offsetLeft - 20;
+		var height = windowheight - document.getElementById( "pane" ).offsetTop - 50;
+		document.getElementById( "pane" ).style.width = width + "px" 	
+		document.getElementById( "pane" ).style.height = height + "px" 	
+	}
+	window.onload = window.onresize;	
+</script>
+
+{% endblock %}
+
+<script type="text/javascript">
+//<![CDATA[
+
+setupAllTabs();
+
+//]]>
+</script>

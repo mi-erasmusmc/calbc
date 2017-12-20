@@ -1,0 +1,18 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+
+{% block title %}{{ title }} | {% trans 'Knewco annotation site admin' %}{% endblock %}
+
+{% block branding %}
+<h1 id="site-name">{% trans 'Knewco Server Error' %}</h1>
+{% endblock %}
+
+{% block content %}
+	<h1>500: Server Error</h1>
+	<div id="contentBody">
+		<p>The page at this address has a technical problem.
+			The web master has to be notified
+			of this problem.</p>
+	</div>
+{% endblock %}
+

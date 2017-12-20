@@ -1,0 +1,39 @@
+div.conceptannotation {
+    background: white url(../img/admin/nav-bg-reverse.gif) 0 -10px repeat-x;
+    padding: 2px 8px 3px 8px;
+    font-size: 11px;
+    color: #999;
+    border-top: 1px solid white;
+    border-bottom: 1px solid #ccc;
+    text-align: left;
+}
+
+fieldset
+{
+	border: 1px solid #781351;
+}
+
+legend
+{
+	color: #fff;
+	background: #ffa20c;
+	border: 1px solid #781351;
+	padding: 4px 6px;
+	font-size: 12px;
+}
+
+form.concept {
+    margin:  3em auto;
+}
+
+tr.head {
+	background: #eee;
+}
+
+tr.row1 {
+	background: #EDF3FE;
+}
+
+tr.row2 {
+	background: white;
+}

@@ -1,0 +1,96 @@
+{% extends "admin/annotationbase.html" %}
+{% load i18n %}
+{% block title %}{{ title }} | {% trans 'Knewco All Concepts' %}{% endblock %}
+{% block breadcrumbs %}{% endblock %}
+{% block branding %}
+<img src="/site-media/images/knewco.png" style="height:40px"/><label id="sitelabel">{% trans 'Overview concepts' %}</label>
+{% endblock %}
+{% block nav-global %}{% endblock %}
+
+{% block content %}
+
+{% if concepts %}
+
+	<form id='form' action='' method='post'>
+		<input type='hidden' name='sort' id='sort' value="{{ sort }}" />
+		<input type='hidden' name='page' id='page' value="{{ concepts.number }}" />
+
+		<p>
+		<label for='search'>Search:</label>
+		<input type='text' name='search' id='search' value="{{ search }}" />&nbsp;&nbsp;
+		<label for='displayed'>Displayed at site:</label>
+		<input type='checkbox' name='displayed' id='displayed' {% ifequal displayed "on" %}checked="True"{% endifequal %}/>&nbsp;&nbsp;
+		<select name='semtypes' id='semtypes'>
+			<option id="0" value ="0">All</option>
+			{% for semantictype in semantictypes %}
+			<option id="{{ semantictype.semanticTypeId }}" value="{{ semantictype.semanticTypeId }}" {% ifequal semtype semantictype.semanticTypeId %}selected='true'{% endifequal %}>{{ semantictype.label }}</option>
+			{% endfor %}
+		</select>
+		<button type="submit" name="go">Go</button>
+		</p>
+	
+		<table>
+			<tr class="head">
+				<th><nobr><a href='{{ request.path }}?search={{ search }}&sort={% ifequal sort "conceptId" %}-{% endifequal %}conceptId'>Concept
+					<img src="/site-media/images/arrow-{% ifequal sort "conceptId" %}up{% else %}down{% endifequal %}.gif"/></a></nobr></th>
+				<th>Name</th>
+				<th>Comment</th>
+				<th>Frequency</th>
+				<th><nobr><a href='{{ request.path }}?search={{ search }}&sort={% ifequal sort "reviewed_relations" %}-{% endifequal %}reviewed_relations'>Relations
+					<img src="/site-media/images/arrow-{% ifequal sort "reviewed_relations" %}up{% else %}down{% endifequal %}.gif"/></a></nobr></th>
+				<th><nobr><a href='{{ request.path }}?search={{ search }}&sort={% ifequal sort "reviewed_definitions" %}-{% endifequal %}reviewed_definitions'>Definitions
+					<img src="/site-media/images/arrow-{% ifequal sort "reviewed_definitions" %}up{% else %}down{% endifequal %}.gif"/></a></nobr></th>
+				<th><nobr><a href='{{ request.path }}?search={{ search }}&sort={% ifequal sort "reviewed_terms" %}-{% endifequal %}reviewed_terms'>Terms
+					<img src="/site-media/images/arrow-{% ifequal sort "reviewed_terms" %}up{% else %}down{% endifequal %}.gif"/></a></nobr></th>
+				<th><nobr><a href='{{ request.path }}?search={{ search }}&sort={% ifequal sort "suppressed" %}-{% endifequal %}suppressed'>Accepted
+					<img src="/site-media/images/arrow-{% ifequal sort "suppressed" %}up{% else %}down{% endifequal %}.gif"/></a></nobr></th>
+				<th><nobr><a href='{{ request.path }}?search={{ search }}&sort={% ifequal sort "reviewDate" %}-{% endifequal %}reviewDate'>Review Date
+					<img src="/site-media/images/arrow-{% ifequal sort "reviewDate" %}up{% else %}down{% endifequal %}.gif"/></a></nobr></th>
+			</tr>
+			{% for concept in concepts.object_list %}
+				<tr class="{% cycle 'row1' 'row2' %}">
+					<td><a href="/concepts/{{ concept.conceptId.id }}/">{{ concept.conceptId.conceptId }}</a></td>
+					<td><a href="/concepts/{{ concept.conceptId.id }}/">{{ concept.getTerm }}</a></td>
+					<td>{{ concept.comment }}</td>
+					<td>{{ concept.getFrequency }}</td>
+					<td><img src="/site-media/images/{% if concept.reviewed_relations %}true{% else %}false{% endif %}.gif"/></td>
+					<td><img src="/site-media/images/{% if concept.reviewed_definitions %}true{% else %}false{% endif %}.gif"/></td>
+					<td><img src="/site-media/images/{% if concept.reviewed_terms %}true{% else %}false{% endif %}.gif"/></td>
+					<td><img src="/site-media/images/{% if concept.suppressed %}false{% else %}true{% endif %}.gif"/></td>
+					<td title="{{ concept.reviewDate|date:"r" }}">{{ concept.reviewDate|date:"d M y" }}</td>
+				</tr>
+			{% endfor %}
+			</table>
+		
+			<br/>
+
+			<!-- pagination object that will allow for moving to next pages -->
+			<center>
+				<div class="pagination">
+				    <span class="step-links">
+				        {% if concepts.has_previous %}
+					        <a href="javascript:SetAndSubmit('page','1');">First</a>
+					        <a href="javascript:SetAndSubmit('page','{{ concepts.previous_page_number }}');">Previous</a>
+				        {% endif %}
+				
+				        Page {{ concepts.number }} of {{ concepts.paginator.num_pages }}.
+				
+				        {% if concepts.has_next %}
+					        <a href="javascript:SetAndSubmit('page','{{ concepts.next_page_number }}');">Next</a>
+					        <a href="javascript:SetAndSubmit('page','{{ concepts.paginator.num_pages }}');">Last</a>
+				        {% endif %}
+				        
+				        <br/>		
+				     
+				    </span>
+				</div>
+			</center>
+			<!-- end pagination object -->
+	</form>
+{% else %}
+	<p>No concept concepts are available</p>
+{% endif %}
+
+
+
+{% endblock %}
